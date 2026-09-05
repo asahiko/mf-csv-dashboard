@@ -1,0 +1,6 @@
+{
+  "_comment": "個人名など公開したくないカテゴリ名を使う非経常ルールはここに追加する。このファイルをコピーして private-data/classify-rules.local.json（gitignore対象）を作成してください。",
+  "nonRecurring": [
+    { "major": "収入", "minor": "（例）○○負担分", "reason": "特定の個人との立替・割り勘精算" }
+  ]
+}

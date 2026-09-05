@@ -1,0 +1,7 @@
+private-csv
+private-data
+private-ref
+app/node_modules
+app/dist
+CLAUDE.md
+.DS_Store
