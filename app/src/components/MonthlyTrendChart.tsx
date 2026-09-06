@@ -4,6 +4,7 @@ import {
   Legend,
   Line,
   ComposedChart,
+  ReferenceArea,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -92,6 +93,21 @@ export function MonthlyTrendChart({ monthly }: Props) {
     return niceScale(Math.min(...values), Math.max(...values));
   }, [data, field, showAverage]);
 
+  // One shaded band per year (alternating), so the year boundary is visible
+  // at a glance without reading the X axis labels closely.
+  const yearBands = useMemo(() => {
+    const bands: { year: number; start: string; end: string }[] = [];
+    for (const row of data) {
+      const last = bands[bands.length - 1];
+      if (last && last.year === row.year) {
+        last.end = row.key;
+      } else {
+        bands.push({ year: row.year, start: row.key, end: row.key });
+      }
+    }
+    return bands;
+  }, [data]);
+
   return (
     <div>
       <div className="controls">
@@ -157,6 +173,23 @@ export function MonthlyTrendChart({ monthly }: Props) {
 
       <ResponsiveContainer width="100%" height={380}>
         <ComposedChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+          {yearBands.map((band, i) => (
+            <ReferenceArea
+              key={band.year}
+              x1={band.start}
+              x2={band.end}
+              fill="var(--fg)"
+              fillOpacity={i % 2 === 0 ? 0 : 0.05}
+              stroke="none"
+              ifOverflow="extendDomain"
+              label={{
+                value: `${band.year}`,
+                position: "insideTopLeft",
+                fontSize: 10,
+                fill: "var(--muted)",
+              }}
+            />
+          ))}
           <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
           <XAxis dataKey="key" tick={{ fontSize: 11 }} minTickGap={20} />
           <YAxis
