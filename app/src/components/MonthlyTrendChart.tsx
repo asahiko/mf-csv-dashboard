@@ -149,7 +149,7 @@ export function MonthlyTrendChart({ monthly }: Props) {
                 onChange={(e) => setWindow(Number(e.target.value))}
               >
                 <option value={3}>3ヶ月</option>
-                <option value={5}>5ヶ月</option>
+                <option value={6}>6ヶ月</option>
                 <option value={12}>12ヶ月</option>
               </select>
             </label>
