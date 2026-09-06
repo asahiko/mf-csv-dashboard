@@ -81,19 +81,39 @@ export function aggregateMonthly(
   return result;
 }
 
+export type RollingMethod = "mean" | "median";
+
+function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? (sorted[mid - 1] + sorted[mid]) / 2
+    : sorted[mid];
+}
+
+/**
+ * Rolling window aggregate. "median" is more robust than "mean" against a
+ * single anomalous month (e.g. a one-off large expense) inside the window,
+ * since that month's value doesn't pull the whole window's figure toward it.
+ */
 export function withRollingAverage<T extends { key: string }>(
   rows: T[],
   field: keyof T,
   window: number,
   outField: string,
+  method: RollingMethod = "mean",
 ): (T & Record<string, number | null>)[] {
   return rows.map((row, i) => {
     if (i < window - 1) return { ...row, [outField]: null };
-    let sum = 0;
+    const values: number[] = [];
     for (let j = i - window + 1; j <= i; j++) {
-      sum += rows[j][field] as unknown as number;
+      values.push(rows[j][field] as unknown as number);
     }
-    return { ...row, [outField]: sum / window };
+    const value =
+      method === "median"
+        ? median(values)
+        : values.reduce((a, b) => a + b, 0) / window;
+    return { ...row, [outField]: value };
   });
 }
 
