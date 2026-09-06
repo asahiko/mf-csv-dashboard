@@ -5,6 +5,7 @@ import {
   Line,
   ComposedChart,
   ReferenceArea,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -200,6 +201,7 @@ export function MonthlyTrendChart({ monthly }: Props) {
             ticks={yScale?.ticks}
             allowDataOverflow
           />
+          <ReferenceLine y={0} stroke="var(--fg)" strokeWidth={1.5} />
           <Tooltip
             formatter={(value) => formatYenCompact(Number(value))}
             labelFormatter={(label) => `${label}`}
